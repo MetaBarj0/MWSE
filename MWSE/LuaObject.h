@@ -107,21 +107,20 @@ public:
 		if( mesh.size() > 31 )
 			throw std::invalid_argument{ "tes3misc.create: 'mesh' parameter must be less than 32 character long." };
 
+		std::string icon = getOptionalParam< std::string >( params, "icon", {} );
+		if( icon.size() > 31 )
+			throw std::invalid_argument{ "tes3misc.create: 'icon' parameter must be less than 32 character long." };
+
 		auto miscItem = new TES3::Misc();
 
 		miscItem->setID( id.c_str() );
 		miscItem->setName( name.c_str() );
 		miscItem->setModelPath( mesh.c_str() );
+		tes3::setDataString( &miscItem->icon, icon.c_str() );
 
 		auto script = getOptionalParamScript( params, "script" );
-
 		if( script != nullptr )
 			miscItem->script = script;
-
-		std::string icon = getOptionalParam< std::string >( params, "icon", {} );
-
-		if( !icon.empty() && icon.size() < 31 )
-			tes3::setDataString( &miscItem->icon, icon.c_str() );
 
 		miscItem->objectFlags = getOptionalParam< double >( params, "objectFlags", 0.0 );
 		miscItem->weight = getOptionalParam< double >( params, "weight", 0.0 );
