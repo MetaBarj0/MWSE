@@ -9,35 +9,45 @@
 
 #include "Log.h"
 
-#define TES3_Book_loadBookText 0x4A2A90
+#include <cstring>
 
-namespace TES3 {
-	const char* Book::getBookText() {
-		// Allow the event to override the text.
-		if (mwse::lua::event::BookGetTextEvent::getEventEnabled()) {
-			auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
-			sol::object eventResult = stateHandle.triggerEvent(new mwse::lua::event::BookGetTextEvent(this));
-			if (eventResult.valid()) {
-				sol::table eventData = eventResult;
-				sol::optional<const char*> newText = eventData["text"];
-				if (newText) {
-					// Create our new buffer.
-					auto length = strlen(newText.value());
-					char * buffer = reinterpret_cast<char*>(mwse::tes3::_new(length + 1));
+constexpr auto TES3_Book_loadBookText = 0x4A2A90;
 
-					// Delete the previous buffer and replace it with this one.
-					mwse::tes3::_delete(*reinterpret_cast<char**>(0x7CA44C));
-					*reinterpret_cast<char**>(0x7CA44C) = buffer;
+namespace TES3
+{
 
-					// Copy into the buffer and get out of here.
-					buffer[length] = '\0';
-					strcpy(buffer, newText.value());
-					return buffer;
-				}
-			}
-		}
+const auto TES3_Book_loadBookText_fn = reinterpret_cast< char *( __thiscall * )( Book * ) >( TES3_Book_loadBookText );
+const auto TES3_Book_Text_Buffer_ptr = reinterpret_cast< char ** >( 0x7CA44C );
 
-		return reinterpret_cast<char*(__thiscall *)(Book*)>(TES3_Book_loadBookText)(this);
-	}
+const char *Book::getBookText()
+{
+	if( !mwse::lua::event::BookGetTextEvent::getEventEnabled() )
+		return TES3_Book_loadBookText_fn( this );
+
+	auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
+	sol::object eventResult = stateHandle.triggerEvent( new mwse::lua::event::BookGetTextEvent( this ) );
+
+	if( !eventResult.valid() )
+		return TES3_Book_loadBookText_fn( this );
+
+	sol::table eventData = eventResult;
+	sol::optional< const char * > newText = eventData[ "text" ];
+	if( !newText )
+		return TES3_Book_loadBookText_fn( this );
+
+	// Create our new buffer.
+	auto length = strlen( newText.value() ) + 1;
+	char *buffer = reinterpret_cast< char * >( mwse::tes3::_new( length ) );
+
+	// Delete the previous buffer and replace it with this one.
+	mwse::tes3::_delete( *TES3_Book_Text_Buffer_ptr );
+	*TES3_Book_Text_Buffer_ptr = buffer;
+
+	// Copy into the buffer and get out of here.
+	std::snprintf( buffer, length, newText.value() );
+
+	return buffer;
+}
+
 }
 
