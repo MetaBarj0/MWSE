@@ -6,10 +6,15 @@
 #include "TES3Util.h"
 
 #include "TES3Activator.h"
+#include "TES3Book.h"
 #include "TES3Misc.h"
 #include "TES3Static.h"
 #include "TES3Enchantment.h"
+<<<<<<< HEAD
 #include "TES3WorldController.h"
+=======
+#include "TES3Skill.h"
+>>>>>>> 35fc54b5... book create binding
 
 namespace mwse::lua
 {
@@ -80,6 +85,87 @@ public:
 		}
 
 		return makeLuaObject( activator );
+	}
+};
+
+template<>
+class ObjectCreator< TES3::Book > : public ObjectCreatorBase
+{
+public:
+	sol::object create( sol::table params, bool getIfExists ) const override
+	{
+		const auto id = getOptionalParam< std::string >( params, "id", {} );
+		if( id.size() > 31 )
+			throw std::invalid_argument{ "tes3book.create: 'id' parameter must be less than 32 character long." };
+
+		if( const auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
+			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Book ) ?
+			makeLuaObject( existingObject ) :
+			throw std::invalid_argument{ "tes3book.create: 'id' parameter already assigned to an existing object that is not a book." };
+
+		const auto name = getOptionalParam< std::string >( params, "name", "A book" );
+		if( name.size() > 31 )
+			throw std::invalid_argument{ "tes3book.create: 'name' parameter must be less than 32 character long." };
+
+		const auto icon = getOptionalParam< std::string >( params, "icon", {} );
+		if( icon.size() > 31 )
+			throw std::invalid_argument{ "tes3book.create: 'icon' parameter must be less than 32 character long." };
+
+		const auto mesh = getOptionalParam< std::string >( params, "mesh", {} );
+		if( mesh.size() > 31 )
+			throw std::invalid_argument{ "tes3book.create: 'mesh' parameter must be less than 32 character long." };
+
+		const auto type = getOptionalParam< double >( params, "type", TES3::Book::BOOK_TYPE_BOOK );
+		if( ( type < TES3::Book::BOOK_TYPE_MIN ) || ( type > TES3::Book::BOOK_TYPE_MAX ) )
+			throw std::invalid_argument{ "tes3book.create: 'type' parameter is incorrect. See tes3.bookType" };
+
+		const auto enchantCapacity = getOptionalParam< double >( params, "enchantCapacity", {} );
+		if( enchantCapacity < 0 )
+			throw std::invalid_argument{ "tes3book.create: 'enchantCapacity' parameter must be greater or equal to 0" };
+
+		const auto skill = getOptionalParam< double >( params, "skill", TES3::SkillID::Invalid );
+		if( ( skill < TES3::SkillID::Invalid ) || ( skill > TES3::SkillID::LastSkill ) )
+			throw std::invalid_argument{ "tes3book.create: 'skill' parameter is incorrect. See tes3.skill" };
+
+		const auto value = getOptionalParam< double >( params, "value", {} );
+		if( value < 0 )
+			throw std::invalid_argument{ "tes3book.create: 'value' parameter must be greater or equal to 0" };
+
+		const auto weight = getOptionalParam< double >( params, "weight", {} );
+		if( weight < 0 )
+			throw std::invalid_argument{ "tes3book.create: 'weight' parameter must be greater or equal to 0" };
+
+		auto book = new TES3::Book();
+
+		book->setID( id.c_str() );
+		book->setName( name.c_str() );
+		book->setModelPath( mesh.c_str() );
+		tes3::setDataString( &book->icon, icon.c_str() );
+		book->bookType = type;
+		book->enchantCapacity = enchantCapacity;
+		book->skillToRaise = skill;
+		book->value = value;
+		book->weight = weight;
+
+		auto enchantment = getOptionalParamObject< TES3::Enchantment >( params, "enchantment" );
+		if( enchantment != nullptr )
+			book->enchantment = enchantment;
+
+		auto script = getOptionalParamScript( params, "script" );
+		if( script != nullptr )
+			book->script = script;
+
+		auto text = getOptionalParam< std::string >( params, "text", {} );
+		book->setBookText( text );
+
+		book->objectFlags = getOptionalParam< double >( params, "objectFlags", 0.0 );
+
+		book->objectFlags |= TES3::ObjectFlag::Modified;
+
+		if( !TES3::DataHandler::get()->nonDynamicData->addNewObject( book ) )
+			throw std::runtime_error( "tes3book.create: could not add the newly created book in its proper collection." );
+
+		return makeLuaObject( book );
 	}
 };
 
