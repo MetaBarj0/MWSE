@@ -5,7 +5,7 @@
 #include "TES3Collections.h"
 #include "TES3Item.h"
 
-#include <string>
+#include <string_view>
 
 namespace TES3 {
 	struct Book : Item {
@@ -30,7 +30,8 @@ namespace TES3 {
 		//
 
 		const char* getBookText();
-		void setBookText( std::string_view text );
+		void setCustomText( std::string_view text );
+		void clearCustomText();
 
 		// utility constants used in create function
 		constexpr static auto BOOK_TYPE_BOOK = 0u;

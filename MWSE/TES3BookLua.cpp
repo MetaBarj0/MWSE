@@ -15,14 +15,6 @@ namespace mwse {
 			return makeObjectCreator( TES3::ObjectType::Book )->create( params, false );
 		}
 
-		void setCustomText( sol::string_view text )
-		{
-		}
-
-		void clearCustomText()
-		{
-		}
-
 		void bindTES3Book() {
 			// Get our lua state.
 			auto stateHandle = LuaManager::getInstance().getThreadSafeStateHandle();
@@ -55,8 +47,8 @@ namespace mwse {
 			usertypeDefinition.set("text", sol::property(&TES3::Book::getBookText));
 
 			// utility function bindings
-			usertypeDefinition.set( "setCustomText", &setCustomText );
-			usertypeDefinition.set( "clearCustomText", &clearCustomText );
+			usertypeDefinition.set( "setCustomText", &TES3::Book::setCustomText );
+			usertypeDefinition.set( "clearCustomText", &TES3::Book::clearCustomText );
 			usertypeDefinition.set( "create", &createBook );
 
 			// TODO: Deprecated. Remove before 2.1-stable.

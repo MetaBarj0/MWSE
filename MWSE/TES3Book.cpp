@@ -8,6 +8,7 @@
 #include "LuaBookGetTextEvent.h"
 
 #include "Log.h"
+#include "BookTextStore.h"
 
 #include <cstring>
 
@@ -56,27 +57,49 @@ static const char *changeBookText( const char *text )
 }
 
 static const auto TES3_Book_loadBookText_fn = reinterpret_cast< char *( __thiscall * )( Book * ) >( 0x4A2A90 );
+static auto getOriginalBookText( Book *book )
+{
+	const char *bookText = TES3_Book_loadBookText_fn( book );
+
+	decltype( auto ) textStore = mwse::tes3::BookTextStore::getInstance();
+	if( textStore.hasTextForBookId( book->getObjectID() ) )
+		bookText = textStore[ book->getObjectID() ].c_str();
+
+	return bookText;
+}
+
 const char *Book::getBookText()
 {
+	decltype( auto ) bookText = getOriginalBookText( this );
+
 	if( !mwse::lua::event::BookGetTextEvent::getEventEnabled() )
-		return TES3_Book_loadBookText_fn( this );
+		return bookText;
 
 	auto stateHandle = mwse::lua::LuaManager::getInstance().getThreadSafeStateHandle();
 	sol::object eventResult = stateHandle.triggerEvent( new mwse::lua::event::BookGetTextEvent( this ) );
 
 	if( !eventResult.valid() )
-		return TES3_Book_loadBookText_fn( this );
+		return bookText;
 
 	sol::table eventData = eventResult;
 	sol::optional< const char * > newText = eventData[ "text" ];
 	if( !newText )
-		return TES3_Book_loadBookText_fn( this );
+		return bookText;
 
 	return changeBookText( newText.value() );
 }
 
-void Book::setBookText( std::string_view text )
+void Book::setCustomText( std::string_view text )
 {
+	if( text.empty() )
+		return;
+
+	mwse::tes3::BookTextStore::getInstance()[ getObjectID() ] = text;
+}
+
+void Book::clearCustomText()
+{
+	mwse::tes3::BookTextStore::getInstance().clearText( getObjectID() );
 }
 
 }

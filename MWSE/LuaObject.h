@@ -51,7 +51,7 @@ public:
 		if( auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
 			return ( getIfExists && ( existingObject->objectType == TES3::ObjectType::Activator ) ) ?
 			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3activator.create: 'id' parameter already assigned to an existing object that is not an activator." };
+			throw std::invalid_argument{ "tes3activator.create: 'id' parameter already assigned to an existing object." };
 
 		std::string name = getOptionalParam< std::string >( params, "name", "Activator" );
 		if( name.size() > 31 )
@@ -101,7 +101,7 @@ public:
 		if( const auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
 			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Book ) ?
 			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3book.create: 'id' parameter already assigned to an existing object that is not a book." };
+			throw std::invalid_argument{ "tes3book.create: 'id' parameter already assigned to an existing object." };
 
 		const auto name = getOptionalParam< std::string >( params, "name", "A book" );
 		if( name.size() > 31 )
@@ -156,7 +156,7 @@ public:
 			book->script = script;
 
 		auto text = getOptionalParam< std::string >( params, "text", {} );
-		book->setBookText( text );
+		book->setCustomText( text );
 
 		book->objectFlags = getOptionalParam< double >( params, "objectFlags", 0.0 );
 
@@ -183,7 +183,7 @@ public:
 		if( auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
 			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Misc ) ?
 			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3misc.create: 'id' parameter already assigned to an existing object that is not a misc item." };
+			throw std::invalid_argument{ "tes3misc.create: 'id' parameter already assigned to an existing object." };
 
 		std::string name = getOptionalParam< std::string >( params, "name", "Miscellaneous item" );
 		if( name.size() > 31 )
@@ -241,7 +241,7 @@ public:
 		if( auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
 			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Static ) ?
 			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3static.create: 'id' parameter already assigned to an existing object that is not a static." };
+			throw std::invalid_argument{ "tes3static.create: 'id' parameter already assigned to an existing object." };
 
 		std::string mesh = getOptionalParam< std::string >( params, "mesh", {} );
 		if( mesh.size() > 31 )
@@ -282,7 +282,7 @@ public:
 		if( auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
 			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Enchantment ) ?
 			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3enchantment.create: 'id' parameter already assigned to an existing object that is not an enchantment." };
+			throw std::invalid_argument{ "tes3enchantment.create: 'id' parameter already assigned to an existing object." };
 
 		auto castType = getOptionalParam( params, "castType", TES3::EnchantmentCastType::Invalid );
 		if( castType >= TES3::EnchantmentCastType::Invalid )
