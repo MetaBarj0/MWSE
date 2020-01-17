@@ -10,11 +10,8 @@
 #include "TES3Misc.h"
 #include "TES3Static.h"
 #include "TES3Enchantment.h"
-<<<<<<< HEAD
 #include "TES3WorldController.h"
-=======
 #include "TES3Skill.h"
->>>>>>> 35fc54b5... book create binding
 
 namespace mwse::lua
 {
@@ -107,7 +104,7 @@ public:
 			book = static_cast< TES3::Book * >( existingObject );
 
 			auto text = getOptionalParam< std::string >( params, "text", {} );
-			book->setCustomText( text );
+			book->setDynamicText( text );
 
 			return makeLuaObject( book );
 		}

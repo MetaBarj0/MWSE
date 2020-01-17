@@ -7,10 +7,15 @@
 namespace mwse::tes3
 {
 
-class BookTextStore
+// holds dynamic texts for books
+// dynamic texts are set at runtime and do not persist between saved games.
+// A good way to use that new feature is to :
+// - use tes3book:setDynamicText function at every load
+// - using this binding is a way to set text for book created at runtime with tes3book.create
+class BookDynamicTextStore
 {
 public:
-	static BookTextStore &getInstance();
+	static BookDynamicTextStore &getInstance();
 
 public:
 	std::string &operator[]( const std::string &key );
@@ -18,13 +23,13 @@ public:
 	void clearText( const std::string &key );
 
 private:
-	BookTextStore() = default;
-	~BookTextStore() = default;
-	BookTextStore( const BookTextStore & ) = default;
-	BookTextStore( BookTextStore && ) = default;
+	BookDynamicTextStore() = default;
+	~BookDynamicTextStore() = default;
+	BookDynamicTextStore( const BookDynamicTextStore & ) = default;
+	BookDynamicTextStore( BookDynamicTextStore && ) = default;
 
-	BookTextStore &operator=( const BookTextStore & ) = default;
-	BookTextStore &operator=( BookTextStore && ) = default;
+	BookDynamicTextStore &operator=( const BookDynamicTextStore & ) = default;
+	BookDynamicTextStore &operator=( BookDynamicTextStore && ) = default;
 
 private:
 	std::unordered_map< std::string, std::string > textStore_;

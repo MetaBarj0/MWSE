@@ -30,8 +30,8 @@ namespace TES3 {
 		//
 
 		const char* getBookText();
-		void setCustomText( std::string_view text );
-		void clearCustomText();
+		void setDynamicText( std::string_view text );
+		void clearDynamicText();
 
 		// utility constants used in create function
 		constexpr static auto BOOK_TYPE_BOOK = 0u;

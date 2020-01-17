@@ -47,9 +47,9 @@ namespace mwse {
 			usertypeDefinition.set("text", sol::property(&TES3::Book::getBookText));
 
 			// utility function bindings
-			usertypeDefinition.set( "setCustomText", &TES3::Book::setCustomText );
-			usertypeDefinition.set( "clearCustomText", &TES3::Book::clearCustomText );
 			usertypeDefinition.set( "create", &createBook );
+			usertypeDefinition.set( "setDynamicText", &TES3::Book::setDynamicText );
+			usertypeDefinition.set( "clearDynamicText", &TES3::Book::clearDynamicText );
 
 			// TODO: Deprecated. Remove before 2.1-stable.
 			usertypeDefinition.set("model", sol::property(&TES3::Book::getModelPath, &TES3::Book::setModelPath));

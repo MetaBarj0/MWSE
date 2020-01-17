@@ -61,7 +61,7 @@ static auto getOriginalBookText( Book *book )
 {
 	const char *bookText = TES3_Book_loadBookText_fn( book );
 
-	decltype( auto ) textStore = mwse::tes3::BookTextStore::getInstance();
+	decltype( auto ) textStore = mwse::tes3::BookDynamicTextStore::getInstance();
 	if( textStore.hasTextForBookId( book->getObjectID() ) )
 		bookText = textStore[ book->getObjectID() ].c_str();
 
@@ -89,17 +89,17 @@ const char *Book::getBookText()
 	return changeBookText( newText.value() );
 }
 
-void Book::setCustomText( std::string_view text )
+void Book::setDynamicText( std::string_view text )
 {
 	if( text.empty() )
 		return;
 
-	mwse::tes3::BookTextStore::getInstance()[ getObjectID() ] = text;
+	mwse::tes3::BookDynamicTextStore::getInstance()[ getObjectID() ] = text;
 }
 
-void Book::clearCustomText()
+void Book::clearDynamicText()
 {
-	mwse::tes3::BookTextStore::getInstance().clearText( getObjectID() );
+	mwse::tes3::BookDynamicTextStore::getInstance().clearText( getObjectID() );
 }
 
 }
