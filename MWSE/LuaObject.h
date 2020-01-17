@@ -98,10 +98,19 @@ public:
 		if( id.size() > 31 )
 			throw std::invalid_argument{ "tes3book.create: 'id' parameter must be less than 32 character long." };
 
+		TES3::Book *book = nullptr;
 		if( const auto existingObject = TES3::DataHandler::get()->nonDynamicData->resolveObject( id.c_str() ); existingObject != nullptr )
-			return ( getIfExists && existingObject->objectType == TES3::ObjectType::Book ) ?
-			makeLuaObject( existingObject ) :
-			throw std::invalid_argument{ "tes3book.create: 'id' parameter already assigned to an existing object." };
+		{
+			if( !getIfExists )
+				throw std::invalid_argument{ "tes3book.create: 'id' parameter already assigned to an existing object." };
+
+			book = static_cast< TES3::Book * >( existingObject );
+
+			auto text = getOptionalParam< std::string >( params, "text", {} );
+			book->setCustomText( text );
+
+			return makeLuaObject( book );
+		}
 
 		const auto name = getOptionalParam< std::string >( params, "name", "A book" );
 		if( name.size() > 31 )
@@ -135,7 +144,7 @@ public:
 		if( weight < 0 )
 			throw std::invalid_argument{ "tes3book.create: 'weight' parameter must be greater or equal to 0" };
 
-		auto book = new TES3::Book();
+		book = new TES3::Book();
 
 		book->setID( id.c_str() );
 		book->setName( name.c_str() );
@@ -154,9 +163,6 @@ public:
 		auto script = getOptionalParamScript( params, "script" );
 		if( script != nullptr )
 			book->script = script;
-
-		auto text = getOptionalParam< std::string >( params, "text", {} );
-		book->setCustomText( text );
 
 		book->objectFlags = getOptionalParam< double >( params, "objectFlags", 0.0 );
 
