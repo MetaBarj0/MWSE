@@ -1352,6 +1352,7 @@
     </ClInclude>
     <ClInclude Include="LuaCalcSunDamageScalarEvent.h">
       <Filter>Header Files\Lua\Events</Filter>
+    </ClInclude>
     <ClInclude Include="BookTextStore.h">
       <Filter>Header Files\Utility</Filter>
     </ClInclude>
@@ -2922,6 +2923,7 @@
     </ClCompile>
     <ClCompile Include="LuaCalcSunDamageScalarEvent.cpp">
       <Filter>Source Files\Lua\Events</Filter>
+    </ClCompile>
     <ClCompile Include="BookTextStore.cpp">
       <Filter>Source Files\Utility</Filter>
     </ClCompile>
